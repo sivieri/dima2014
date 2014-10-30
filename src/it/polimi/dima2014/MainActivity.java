@@ -1,11 +1,15 @@
 package it.polimi.dima2014;
 
+import it.polimi.dima2014.data.Note;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements MainFragment.OnNoteSelectedListener, NoteFragmentView.OnNoteEditListener {
 
     public static final String TAG = "dima2014";
 
@@ -36,5 +40,25 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+	@Override
+	public void onNoteSelected(Note note) {
+		Fragment noteFragment = new NoteFragmentView(note);
+		FragmentManager manager = getFragmentManager();
+		FragmentTransaction trans = manager.beginTransaction();
+		trans.replace(R.id.container, noteFragment);
+		trans.addToBackStack(null);
+		trans.commit();
+	}
+
+	@Override
+	public void onNoteEdit(Note note) {
+		Fragment noteEditFragment = new NoteFragmentEdit(note);
+		FragmentManager manager = getFragmentManager();
+		FragmentTransaction trans = manager.beginTransaction();
+		trans.replace(R.id.container, noteEditFragment);
+		trans.addToBackStack(null);
+		trans.commit();
+	}
 
 }
