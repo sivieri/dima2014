@@ -1,12 +1,17 @@
 package it.polimi.dima2014.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Notes {
 
 	private Map<Long, Note> notes;
+
+	public Notes() {
+		this.notes = new HashMap<Long, Note>();
+	}
 
 	public void add(Note note) {
 		this.notes.put(note.getId(), note);

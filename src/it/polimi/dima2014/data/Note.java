@@ -8,7 +8,7 @@ public class Note {
 	private String title;
 	private String content;
 
-	public Note(int id, DateTime timestamp, String title, String content) {
+	public Note(long id, DateTime timestamp, String title, String content) {
 		this.id = id;
 		this.timestamp = timestamp;
 		this.title = title;

@@ -20,13 +20,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MainFragment extends Fragment implements OnItemClickListener {
+	public static final String TAG = "MainFragment";
 
 	private Notes notes;
 	private OnNoteSelectedListener noteListener;
-	
+
 	public interface OnNoteSelectedListener {
-        public void onNoteSelected(Note note);
-    }
+		public void onNoteSelected(Note note);
+	}
 
 	public MainFragment() {
 		this.notes = new Notes();
@@ -35,16 +36,21 @@ public class MainFragment extends Fragment implements OnItemClickListener {
 		this.notes.add(new Note(2, new DateTime(2014, 10, 24, 15, 26, 34), "Note 3", "Third test"));
 		this.notes.add(new Note(3, new DateTime(2014, 10, 25, 11, 11, 45), "Note 4", "Fourth test"));
 	}
-	
+
+	public void updateNote(Note note) {
+		this.notes.add(note);
+	}
+
 	@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            noteListener = (OnNoteSelectedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
-        }
-    }
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			this.noteListener = (OnNoteSelectedListener) activity;
+		}
+		catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement OnNoteSelectedListener");
+		}
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,6 +66,6 @@ public class MainFragment extends Fragment implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Logger.getLogger(MainActivity.TAG).info("Clicked on " + id);
-		noteListener.onNoteSelected(notes.get(id));
+		this.noteListener.onNoteSelected(this.notes.get(id));
 	}
 }

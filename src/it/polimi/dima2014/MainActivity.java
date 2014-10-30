@@ -9,44 +9,44 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity implements MainFragment.OnNoteSelectedListener, NoteFragmentView.OnNoteEditListener {
+public class MainActivity extends Activity implements MainFragment.OnNoteSelectedListener, NoteFragmentView.OnNoteEditListener, NoteFragmentEdit.OnNoteEditDoneListener {
 
-    public static final String TAG = "dima2014";
+	public static final String TAG = "dima2014";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().add(R.id.container, new MainFragment()).commit();
-        }
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		if (savedInstanceState == null) {
+			getFragmentManager().beginTransaction().add(R.id.container, new MainFragment(), MainFragment.TAG).commit();
+		}
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
 	@Override
 	public void onNoteSelected(Note note) {
 		Fragment noteFragment = new NoteFragmentView(note);
 		FragmentManager manager = getFragmentManager();
 		FragmentTransaction trans = manager.beginTransaction();
-		trans.replace(R.id.container, noteFragment);
+		trans.replace(R.id.container, noteFragment, NoteFragmentView.TAG);
 		trans.addToBackStack(null);
 		trans.commit();
 	}
@@ -56,9 +56,25 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
 		Fragment noteEditFragment = new NoteFragmentEdit(note);
 		FragmentManager manager = getFragmentManager();
 		FragmentTransaction trans = manager.beginTransaction();
-		trans.replace(R.id.container, noteEditFragment);
+		trans.replace(R.id.container, noteEditFragment, NoteFragmentEdit.TAG);
 		trans.addToBackStack(null);
 		trans.commit();
+	}
+
+	@Override
+	public void onSave(Note note) {
+		FragmentManager manager = getFragmentManager();
+		NoteFragmentView noteView = (NoteFragmentView) manager.findFragmentByTag(NoteFragmentView.TAG);
+		noteView.updateNote(note);
+		MainFragment mainFragment = (MainFragment) manager.findFragmentByTag(MainFragment.TAG);
+		mainFragment.updateNote(note);
+		manager.popBackStack();
+	}
+
+	@Override
+	public void onCancel() {
+		FragmentManager manager = getFragmentManager();
+		manager.popBackStack();
 	}
 
 }
