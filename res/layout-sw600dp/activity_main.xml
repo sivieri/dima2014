@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    tools:context="it.polimi.dima2014.MainActivity"
+    tools:ignore="MergeRootFrame">
+    
+    <FrameLayout
+        android:id="@+id/listfragment"
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="fill_parent" />
+    
+    <FrameLayout
+        android:id="@+id/notefragmentview"
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="fill_parent" />
+    
+</LinearLayout>
