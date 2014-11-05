@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DimaTodos</string>
+    <string name="hello_world">Ciao mondo!</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="title_hint">Titolo</string>
+    <string name="content_hint">Contenuto</string>
+    <string name="save_button">Salva</string>
+    <string name="cancel_button">Annulla</string>
+    <string name="edit_button">Modifica</string>
+
+</resources>
