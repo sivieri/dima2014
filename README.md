@@ -18,3 +18,8 @@ This version includes the Android Support Library v4, which is automatically add
 * Content provider
 
 Known bug: the list of all titles of the notes is not able to handle changes to the titles themselves from the editor. As specified at lesson, these first two lessons were mostly about handling the graphical part on different devices; we are going to solve the list management as soon as we start using the *content provider* that we started last time.
+
+# Lesson 3
+* Use the content provider to handle the notes list
+* Add the *add new* and *delete* actions
+* Support sharing of text to and from the app

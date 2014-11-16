@@ -24,6 +24,8 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
 
     public static final String TAG = "dima2014";
 
+    private static final int SHARED_TITLE_LIMIT = 15;
+
     private ShareActionProvider shareActionProvider = null;
 
     @Override
@@ -47,8 +49,25 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
                 trans.add(R.id.notefragmentview, new MainFragment(), MainFragment.TAG);
             }
             trans.commit();
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            String type = intent.getType();
+            Bundle extras = intent.getExtras();
+            if (extras != null && action != null && action.equals(Intent.ACTION_SEND) && type != null && type.startsWith("text")) {
+                String sharedText = extras.getString(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    String sharedTitle = sharedText.substring(0, sharedText.length() >= SHARED_TITLE_LIMIT ? SHARED_TITLE_LIMIT : sharedText.length()).concat("...");
+                    ContentValues values = new ContentValues();
+                    values.put(NotesOpenHelper.KEY, sharedTitle);
+                    values.put(NotesOpenHelper.VALUE, sharedText);
+                    Uri uri = getContentResolver().insert(NotesContentProvider.CONTENT_URI, values);
+                    String uriString = uri.toString();
+                    long id = Long.parseLong(uriString.substring(uriString.lastIndexOf('/') + 1));
+                    Note note = new Note(id, new DateTime(), sharedTitle, sharedText);
+                    onNoteSelected(note);
+                }
+            }
         }
-
     }
 
     @Override
@@ -87,7 +106,9 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, note.getTitle() + "\n" + note.getContent());
         sendIntent.setType("text/plain");
-        this.shareActionProvider.setShareIntent(sendIntent);
+        if (this.shareActionProvider != null) {
+            this.shareActionProvider.setShareIntent(sendIntent);
+        }
     }
 
     @Override
