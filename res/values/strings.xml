@@ -10,5 +10,7 @@
     <string name="cancel_button">Cancel</string>
     <string name="edit_button">Edit</string>
     <string name="new_button">New note</string>
+    <string name="note_context_deleted">Delete</string>
+    <string name="note_share_text">Share</string>
 
 </resources>
