@@ -77,6 +77,12 @@ public class NoteFragmentView extends Fragment {
     public void onResume() {
         super.onResume();
         updateNoteView();
+        if (this.note != null) {
+            boolean newNote = this.note.getTitle().equals("") && this.note.getContent().equals("");
+            if (newNote) {
+                this.editListener.onNoteEdit(this.note);
+            }
+        }
     }
 
     private void updateNoteView() {

@@ -9,5 +9,6 @@
     <string name="save_button">Save</string>
     <string name="cancel_button">Cancel</string>
     <string name="edit_button">Edit</string>
+    <string name="new_button">New note</string>
 
 </resources>

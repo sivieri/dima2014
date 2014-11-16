@@ -8,12 +8,12 @@ import android.util.Log;
 
 public class NotesOpenHelper extends SQLiteOpenHelper {
 
-    static final String TABLE_NAME = "dimanotes";
-    static final int TABLE_VERSION = 1;
-    static final String ID = "_id";
-    static final String KEY = "title";
-    static final String VALUE = "content";
-    static final String TIMESTAMP = "ts";
+    public static final String TABLE_NAME = "dimanotes";
+    public static final int TABLE_VERSION = 1;
+    public static final String ID = "_id";
+    public static final String KEY = "title";
+    public static final String VALUE = "content";
+    public static final String TIMESTAMP = "ts";
 
     private static final String TABLE_CREATE = "CREATE TABLE " + TABLE_NAME + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY + " TEXT, " + VALUE + " TEXT," + TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP);";
 

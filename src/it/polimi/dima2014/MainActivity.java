@@ -1,13 +1,19 @@
 package it.polimi.dima2014;
 
 import it.polimi.dima2014.data.Note;
+import it.polimi.dima2014.data.NotesContentProvider;
+import it.polimi.dima2014.data.NotesOpenHelper;
 
 import java.util.logging.Logger;
+
+import org.joda.time.DateTime;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -92,8 +98,6 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         FragmentManager manager = getFragmentManager();
         NoteFragmentView noteView = (NoteFragmentView) manager.findFragmentByTag(NoteFragmentView.TAG);
         noteView.updateNote(note);
-        MainFragment mainFragment = (MainFragment) manager.findFragmentByTag(MainFragment.TAG);
-        mainFragment.updateNote(note);
         manager.popBackStack();
     }
 
@@ -103,4 +107,15 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         manager.popBackStack();
     }
 
+    @Override
+    public void onNoteNew() {
+        ContentValues values = new ContentValues();
+        values.put(NotesOpenHelper.KEY, "");
+        values.put(NotesOpenHelper.VALUE, "");
+        Uri uri = getContentResolver().insert(NotesContentProvider.CONTENT_URI, values);
+        String uriString = uri.toString();
+        long id = Long.parseLong(uriString.substring(uriString.lastIndexOf('/') + 1));
+        Note note = new Note(id, new DateTime(), "", "");
+        onNoteSelected(note);
+    }
 }

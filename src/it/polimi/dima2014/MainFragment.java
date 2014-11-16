@@ -1,71 +1,112 @@
 package it.polimi.dima2014;
 
 import it.polimi.dima2014.data.Note;
-import it.polimi.dima2014.data.Notes;
+import it.polimi.dima2014.data.NotesContentProvider;
+import it.polimi.dima2014.data.NotesOpenHelper;
 
-import java.util.List;
 import java.util.logging.Logger;
 
-import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
-public class MainFragment extends Fragment implements OnItemClickListener {
-	public static final String TAG = "MainFragment";
+public class MainFragment extends Fragment implements OnItemClickListener, LoaderCallbacks<Cursor> {
+    public static final String TAG = "MainFragment";
 
-	private Notes notes;
-	private OnNoteSelectedListener noteListener;
+    private OnNoteSelectedListener noteListener;
+    private SimpleCursorAdapter mAdapter;
+    private DateTimeFormatter formatter;
 
-	public interface OnNoteSelectedListener {
-		public void onNoteSelected(Note note);
-	}
+    public interface OnNoteSelectedListener {
+        public void onNoteSelected(Note note);
 
-	public MainFragment() {
-		this.notes = new Notes();
-		this.notes.add(new Note(0, new DateTime(2014, 10, 23, 12, 56, 21), "Note 1", "First test"));
-		this.notes.add(new Note(1, new DateTime(2014, 10, 24, 8, 32, 23), "Note 2", "Second test"));
-		this.notes.add(new Note(2, new DateTime(2014, 10, 24, 15, 26, 34), "Note 3", "Third test"));
-		this.notes.add(new Note(3, new DateTime(2014, 10, 25, 11, 11, 45), "Note 4", "Fourth test"));
-	}
+        public void onNoteNew();
+    }
 
-	public void updateNote(Note note) {
-		this.notes.add(note);
-	}
+    public MainFragment() {
+        this.formatter = new DateTimeFormatterBuilder().appendYear(4, 4).appendLiteral("-").appendMonthOfYear(2).appendLiteral("-").appendDayOfMonth(2).appendLiteral(" ").appendHourOfDay(2).appendLiteral(":").appendMinuteOfHour(2).appendLiteral(":").appendSecondOfMinute(2).toFormatter();
+    }
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try {
-			this.noteListener = (OnNoteSelectedListener) activity;
-		}
-		catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnNoteSelectedListener");
-		}
-	}
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            this.noteListener = (OnNoteSelectedListener) activity;
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnNoteSelectedListener");
+        }
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-		List<String> titles = this.notes.getTitles();
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, titles);
-		ListView listView = (ListView) rootView.findViewById(R.id.notesList);
-		listView.setAdapter(adapter);
-		listView.setOnItemClickListener(this);
-		return rootView;
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        String[] fromColumns = { NotesOpenHelper.KEY };
+        int[] toViews = { android.R.id.text1 };
+        this.mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
+        ListView listView = (ListView) rootView.findViewById(R.id.notesList);
+        listView.setAdapter(this.mAdapter);
+        listView.setOnItemClickListener(this);
+        getActivity().getLoaderManager().initLoader(0, null, this);
+        Button newButton = (Button) rootView.findViewById(R.id.newNote);
+        newButton.setOnClickListener(new OnClickListener() {
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Logger.getLogger(MainActivity.TAG).info("Clicked on " + id);
-		this.noteListener.onNoteSelected(this.notes.get(id));
-	}
+            @Override
+            public void onClick(View arg0) {
+                MainFragment.this.noteListener.onNoteNew();
+            }
+
+        });
+        return rootView;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Logger.getLogger(MainActivity.TAG).info("Clicked on " + id);
+        Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + id);
+        String[] projection = { NotesOpenHelper.ID, NotesOpenHelper.KEY, NotesOpenHelper.VALUE, NotesOpenHelper.TIMESTAMP };
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            Long noteId = cursor.getLong(cursor.getColumnIndexOrThrow(NotesOpenHelper.ID));
+            String title = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.KEY));
+            String content = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.VALUE));
+            String ts = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.TIMESTAMP));
+            cursor.close();
+            this.noteListener.onNoteSelected(new Note(noteId, this.formatter.parseDateTime(ts), title, content));
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        String[] projection = { NotesOpenHelper.ID, NotesOpenHelper.KEY };
+        return new CursorLoader(getActivity(), NotesContentProvider.CONTENT_URI, projection, null, null, NotesOpenHelper.ID + " DESC");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+        this.mAdapter.swapCursor(arg1);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+        this.mAdapter.swapCursor(null);
+    }
 }
