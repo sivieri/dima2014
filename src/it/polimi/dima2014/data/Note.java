@@ -7,12 +7,21 @@ public class Note {
 	private DateTime timestamp;
 	private String title;
 	private String content;
+	private boolean first = false;
 
 	public Note(long id, DateTime timestamp, String title, String content) {
 		this.id = id;
 		this.timestamp = timestamp;
 		this.title = title;
 		this.content = content;
+	}
+
+	public Note(long id, DateTime timestamp, String title, String content, boolean first) {
+		this.id = id;
+		this.timestamp = timestamp;
+		this.title = title;
+		this.content = content;
+		this.first = first;
 	}
 
 	public long getId() {
@@ -29,6 +38,10 @@ public class Note {
 
 	public String getContent() {
 		return this.content;
+	}
+
+	public boolean isFirst() {
+		return this.first;
 	}
 
 	@Override
