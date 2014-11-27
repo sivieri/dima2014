@@ -131,11 +131,12 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
 
 	@Override
 	public void onCancel(long id) {
+		FragmentManager manager = getFragmentManager();
 		if (id != -1) {
 			Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + id);
 			getContentResolver().delete(uri, null, null);
+			manager.popBackStack();
 		}
-		FragmentManager manager = getFragmentManager();
 		manager.popBackStack();
 	}
 

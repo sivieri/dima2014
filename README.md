@@ -23,3 +23,9 @@ Known bug: the list of all titles of the notes is not able to handle changes to 
 * Use the content provider to handle the notes list
 * Add the *add new* and *delete* actions
 * Support sharing of text to and from the app
+
+# Lesson 4
+* Multitasking (see the [dedicated project](https://github.com/sivieri/BlockingTests))
+* Using Android content providers
+* Integrate calendar actions
+* Properly handle canceling the creation of a new note
