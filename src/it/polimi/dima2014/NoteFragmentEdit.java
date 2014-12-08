@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,11 +25,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class NoteFragmentEdit extends Fragment implements CurrentEventLocationResult {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+
+public class NoteFragmentEdit extends Fragment implements CurrentEventLocationResult, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
     public static final String TAG = "NoteFragmentEdit";
 
     private Note note;
     private OnNoteEditDoneListener editDoneListener;
+    private LocationClient mLocationClient;
 
     public interface OnNoteEditDoneListener {
         public void onSave(Note note);
@@ -77,11 +83,14 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
 
             @Override
             public void onClick(View v) {
+                NoteFragmentEdit.this.note.setFirst(false);
                 EditText noteTitle = (EditText) v.getRootView().findViewById(R.id.noteTitleEdit);
                 EditText noteContent = (EditText) v.getRootView().findViewById(R.id.noteContentEdit);
                 ContentValues values = new ContentValues();
                 values.put(NotesOpenHelper.KEY, noteTitle.getText().toString());
                 values.put(NotesOpenHelper.VALUE, noteContent.getText().toString());
+                values.put(NotesOpenHelper.LAT, NoteFragmentEdit.this.note.getLat());
+                values.put(NotesOpenHelper.LNG, NoteFragmentEdit.this.note.getLng());
                 Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + NoteFragmentEdit.this.note.getId());
                 getActivity().getContentResolver().update(uri, values, null, null);
                 Note note = new Note(NoteFragmentEdit.this.note.getId(), new DateTime(), noteTitle.getText().toString(), noteContent.getText().toString());
@@ -89,6 +98,7 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
             }
 
         });
+        this.mLocationClient = new LocationClient(getActivity(), this, this);
 
         return rootView;
     }
@@ -106,6 +116,12 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
             task.setContentResolver(getActivity().getContentResolver());
             task.execute(current);
         }
+        if (this.note.getLat() == 0 && this.note.getLng() == 0) {
+            MainActivity a = (MainActivity) getActivity();
+            if (a.servicesConnected()) {
+                this.mLocationClient.connect();
+            }
+        }
     }
 
     @Override
@@ -114,6 +130,7 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
             Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + this.note.getId());
             getActivity().getContentResolver().delete(uri, null, null);
         }
+        this.mLocationClient.disconnect();
         super.onPause();
     }
 
@@ -121,5 +138,24 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
     public void processResult(String result) {
         EditText title = (EditText) getActivity().findViewById(R.id.noteTitleEdit);
         title.setHint("Note @ " + result);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult arg0) {
+        Log.e(MainActivity.TAG, "Unable to connect to location services: " + arg0.getErrorCode());
+    }
+
+    @Override
+    public void onConnected(Bundle arg0) {
+        Log.i(MainActivity.TAG, "Location connected");
+        Location l = this.mLocationClient.getLastLocation();
+        this.note.setLat(l.getLatitude());
+        this.note.setLng(l.getLongitude());
+        this.mLocationClient.disconnect();
+    }
+
+    @Override
+    public void onDisconnected() {
+        Log.i(MainActivity.TAG, "Location disconnected");
     }
 }

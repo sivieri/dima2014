@@ -29,3 +29,11 @@ Known bug: the list of all titles of the notes is not able to handle changes to 
 * Using Android content providers
 * Integrate calendar actions
 * Properly handle canceling the creation of a new note
+
+# Lesson 5
+* Interface with Wikitionary API to search for terms
+* Get the current location and add it to new notes
+* Open a map application with the current location
+* Minor changes
+
+This version requires the Google Play Services library: it has to be set up according to the local Android SDK location, [here](http://developer.android.com/google/play-services/setup.html) you can find the instructions.

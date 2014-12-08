@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 import org.joda.time.DateTime;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -16,17 +18,37 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ShareActionProvider;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 public class MainActivity extends Activity implements MainFragment.OnNoteSelectedListener, NoteFragmentView.OnNoteEditListener, NoteFragmentEdit.OnNoteEditDoneListener {
 
     public static final String TAG = "dima2014";
 
     private static final int SHARED_TITLE_LIMIT = 15;
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-    private ShareActionProvider shareActionProvider = null;
+    public static class ErrorDialogFragment extends DialogFragment {
+        private Dialog mDialog;
+
+        public ErrorDialogFragment() {
+            super();
+            this.mDialog = null;
+        }
+
+        public void setDialog(Dialog dialog) {
+            this.mDialog = dialog;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return this.mDialog;
+        }
+    }
 
     @Override
     public void onAttachFragment(Fragment fragment) {
@@ -73,23 +95,30 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem menuItem = menu.findItem(R.id.share_note);
-        this.shareActionProvider = (ShareActionProvider) menuItem.getActionProvider();
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if (id == R.id.wiki_search) {
             Intent i = new Intent(this, WikiActivity.class);
             startActivity(i);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case CONNECTION_FAILURE_RESOLUTION_REQUEST:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        servicesConnected();
+                        break;
+                }
+        }
     }
 
     @Override
@@ -106,13 +135,6 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         else {
             NoteFragmentView noteView = (NoteFragmentView) manager.findFragmentByTag(NoteFragmentView.TAG);
             noteView.updateNoteAndView(note);
-        }
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, note.getTitle() + "\n" + note.getContent());
-        sendIntent.setType("text/plain");
-        if (this.shareActionProvider != null) {
-            this.shareActionProvider.setShareIntent(sendIntent);
         }
     }
 
@@ -155,5 +177,22 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         long id = Long.parseLong(uriString.substring(uriString.lastIndexOf('/') + 1));
         Note note = new Note(id, new DateTime(), "", "", true);
         onNoteSelected(note);
+    }
+
+    public boolean servicesConnected() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == resultCode) {
+            Log.d("Location Updates", "Google Play services is available.");
+            return true;
+        }
+        else {
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            if (errorDialog != null) {
+                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+                errorFragment.setDialog(errorDialog);
+                errorFragment.show(getFragmentManager(), "Location Updates");
+            }
+            return false;
+        }
     }
 }

@@ -15,5 +15,6 @@
     <string name="sidebar_search">Search&#8230;</string>
     <string name="title_activity_wiki">WikiActivity</string>
     <string name="wiki_search">Search on Wikitionary</string>
+    <string name="go_to_map">Show the location&#8230;</string>
 
 </resources>
