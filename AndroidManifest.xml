@@ -7,8 +7,9 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
-    
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -24,15 +25,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND"/>
+                <action android:name="android.intent.action.SEND" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="text/*"/>
+                <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
-        <provider android:authorities="it.polimi.dima2014.data.notescontentprovider" android:exported="true" android:name="it.polimi.dima2014.data.NotesContentProvider" android:permission="it.polimi.dima2014.data.NotesContentProvider.ACCESS_DATA">
+
+        <provider
+            android:name=".data.NotesContentProvider"
+            android:authorities="it.polimi.dima2014.data.notescontentprovider"
+            android:exported="true"
+            android:permission="it.polimi.dima2014.data.NotesContentProvider.ACCESS_DATA" >
         </provider>
+
+        <activity
+            android:name=".WikiActivity"
+            android:label="@string/title_activity_wiki" >
+        </activity>
     </application>
 
 </manifest>

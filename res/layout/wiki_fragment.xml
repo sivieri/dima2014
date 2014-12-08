@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/wordEdit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/sidebar_search" />
+        
+        <Button
+			android:id="@+id/wordClear"
+			android:layout_width="30dip"
+			android:layout_height="30dip"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentEnd="true"
+			android:background="@android:drawable/ic_input_delete"
+			android:layout_centerVertical="true"
+			android:layout_marginRight="5dip"
+			android:layout_marginEnd="5dip"/>
+
+    </RelativeLayout>
+
+    <Spinner
+        android:id="@+id/languageSpinner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <ListView
+        android:id="@+id/definitionsList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scrollbars="vertical">
+    </ListView>
+
+</LinearLayout>

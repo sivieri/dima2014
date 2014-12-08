@@ -3,6 +3,12 @@
     tools:context="it.polimi.dima2014.MainActivity" >
 
     <item
+        android:id="@+id/wiki_search"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/wiki_search"/>
+    
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"

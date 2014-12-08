@@ -12,5 +12,8 @@
     <string name="new_button">New note</string>
     <string name="note_context_deleted">Delete</string>
     <string name="note_share_text">Share</string>
+    <string name="sidebar_search">Search&#8230;</string>
+    <string name="title_activity_wiki">WikiActivity</string>
+    <string name="wiki_search">Search on Wikitionary</string>
 
 </resources>
