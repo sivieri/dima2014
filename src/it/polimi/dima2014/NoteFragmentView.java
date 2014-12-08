@@ -122,13 +122,13 @@ public class NoteFragmentView extends Fragment {
             if (newNote) {
                 this.editListener.onNoteEdit(this.note);
             }
-        }
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, this.note.getTitle() + "\n" + this.note.getContent());
-        sendIntent.setType("text/plain");
-        if (this.shareActionProvider != null) {
-            this.shareActionProvider.setShareIntent(sendIntent);
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, this.note.getTitle() + "\n" + this.note.getContent());
+            sendIntent.setType("text/plain");
+            if (this.shareActionProvider != null) {
+                this.shareActionProvider.setShareIntent(sendIntent);
+            }
         }
     }
 

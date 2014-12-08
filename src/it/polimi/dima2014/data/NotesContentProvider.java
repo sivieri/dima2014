@@ -1,5 +1,7 @@
 package it.polimi.dima2014.data;
 
+import it.polimi.dima2014.MainActivity;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -12,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class NotesContentProvider extends ContentProvider {
 
@@ -34,6 +37,7 @@ public class NotesContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        Log.d(MainActivity.TAG, "Note to be deleted: " + uri);
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = this.database.getWritableDatabase();
         int rowsDeleted = 0;
@@ -145,7 +149,7 @@ public class NotesContentProvider extends ContentProvider {
     }
 
     private void checkColumns(String[] projection) {
-        String[] available = { NotesOpenHelper.ID, NotesOpenHelper.KEY, NotesOpenHelper.VALUE, NotesOpenHelper.TIMESTAMP };
+        String[] available = { NotesOpenHelper.ID, NotesOpenHelper.KEY, NotesOpenHelper.VALUE, NotesOpenHelper.TIMESTAMP, NotesOpenHelper.LAT, NotesOpenHelper.LNG };
         if (projection != null) {
             HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
             HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(available));

@@ -93,7 +93,7 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
                 values.put(NotesOpenHelper.LNG, NoteFragmentEdit.this.note.getLng());
                 Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + NoteFragmentEdit.this.note.getId());
                 getActivity().getContentResolver().update(uri, values, null, null);
-                Note note = new Note(NoteFragmentEdit.this.note.getId(), new DateTime(), noteTitle.getText().toString(), noteContent.getText().toString());
+                Note note = new Note(NoteFragmentEdit.this.note.getId(), new DateTime(), noteTitle.getText().toString(), noteContent.getText().toString(), NoteFragmentEdit.this.note.getLat(), NoteFragmentEdit.this.note.getLng());
                 NoteFragmentEdit.this.editDoneListener.onSave(note);
             }
 
@@ -149,6 +149,7 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
     public void onConnected(Bundle arg0) {
         Log.i(MainActivity.TAG, "Location connected");
         Location l = this.mLocationClient.getLastLocation();
+        Log.d(MainActivity.TAG, l.toString());
         this.note.setLat(l.getLatitude());
         this.note.setLng(l.getLongitude());
         this.mLocationClient.disconnect();

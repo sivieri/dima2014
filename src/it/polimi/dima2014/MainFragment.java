@@ -87,7 +87,7 @@ public class MainFragment extends Fragment implements OnItemClickListener, Loade
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Logger.getLogger(MainActivity.TAG).info("Clicked on " + id);
         Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + id);
-        String[] projection = { NotesOpenHelper.ID, NotesOpenHelper.KEY, NotesOpenHelper.VALUE, NotesOpenHelper.TIMESTAMP };
+        String[] projection = { NotesOpenHelper.ID, NotesOpenHelper.KEY, NotesOpenHelper.VALUE, NotesOpenHelper.TIMESTAMP, NotesOpenHelper.LAT, NotesOpenHelper.LNG };
         Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -95,8 +95,10 @@ public class MainFragment extends Fragment implements OnItemClickListener, Loade
             String title = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.KEY));
             String content = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.VALUE));
             String ts = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.TIMESTAMP));
+            Double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(NotesOpenHelper.LAT));
+            Double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(NotesOpenHelper.LNG));
             cursor.close();
-            this.noteListener.onNoteSelected(new Note(noteId, this.formatter.parseDateTime(ts), title, content));
+            this.noteListener.onNoteSelected(new Note(noteId, this.formatter.parseDateTime(ts), title, content, lat, lng));
         }
     }
 

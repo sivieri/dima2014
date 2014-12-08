@@ -28,14 +28,14 @@ public class NotesOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase arg0) {
-        Log.i(MainActivity.TAG, "Creating the db");
+        Log.d(MainActivity.TAG, "Creating the db, version " + TABLE_VERSION + ": " + TABLE_CREATE);
         arg0.execSQL(TABLE_CREATE);
         arg0.execSQL(WELCOME_MSG);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
-        Log.i(MainActivity.TAG, "Upgrade from " + arg1 + " to " + arg2);
+        Log.d(MainActivity.TAG, "Upgrade from " + arg1 + " to " + arg2);
         if (arg1 == 1 && arg2 == 2) {
             arg0.execSQL(UPGRADE_1_TO_2_P1);
             arg0.execSQL(UPGRADE_1_TO_2_P2);
