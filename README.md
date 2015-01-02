@@ -37,3 +37,9 @@ Known bug: the list of all titles of the notes is not able to handle changes to 
 * Minor changes
 
 This version requires the Google Play Services library: it has to be set up according to the local Android SDK location, [here](http://developer.android.com/google/play-services/setup.html) you can find the instructions.
+
+# Lesson 6
+* Ported the project to AndroidStudio (now the official IDE)
+* Ported the project to API 21: basically no changes, except for the Location API client, due to changes to the Google Play Services library v.6.5
+
+This version requires AndroidStudio. It does not require the Google Play Services library to be added by hand, the Gradle building system takes care of it (as well as the JodaTime library and the support library v.4).
