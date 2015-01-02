@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.polimi.dima2014"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -37,13 +37,14 @@
         <provider
             android:name=".data.NotesContentProvider"
             android:authorities="it.polimi.dima2014.data.notescontentprovider"
-            android:exported="true"
+            android:exported="false"
             android:permission="it.polimi.dima2014.data.NotesContentProvider.ACCESS_DATA" >
         </provider>
 
         <activity
             android:name=".WikiActivity"
-            android:label="@string/title_activity_wiki" >
+            android:label="@string/title_activity_wiki"
+            android:documentLaunchMode="always">
         </activity>
 
         <meta-data
