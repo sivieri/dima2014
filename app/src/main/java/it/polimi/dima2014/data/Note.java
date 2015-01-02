@@ -1,8 +1,10 @@
 package it.polimi.dima2014.data;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 
-public class Note {
+public class Note implements Serializable {
     private long id;
     private DateTime timestamp;
     private String title;

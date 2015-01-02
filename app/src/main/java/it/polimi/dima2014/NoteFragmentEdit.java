@@ -27,14 +27,14 @@ import android.widget.EditText;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
-public class NoteFragmentEdit extends Fragment implements CurrentEventLocationResult, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class NoteFragmentEdit extends Fragment implements CurrentEventLocationResult, GoogleApiClient.ConnectionCallbacks {
     public static final String TAG = "NoteFragmentEdit";
 
-    private Note note;
+    private Note note = null;
     private OnNoteEditDoneListener editDoneListener;
-    private LocationClient mLocationClient;
 
     public interface OnNoteEditDoneListener {
         public void onSave(Note note);
@@ -42,8 +42,7 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
         public void onCancel(long id);
     }
 
-    public NoteFragmentEdit(Note note) {
-        this.note = note;
+    public NoteFragmentEdit() {
     }
 
     @Override
@@ -62,8 +61,12 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
         View rootView = inflater.inflate(R.layout.fragment_note_edit, container, false);
         EditText noteTitle = (EditText) rootView.findViewById(R.id.noteTitleEdit);
         EditText noteContent = (EditText) rootView.findViewById(R.id.noteContentEdit);
-        noteTitle.setText(this.note.getTitle());
-        noteContent.setText(this.note.getContent());
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("note")) {
+            note = (Note) bundle.getSerializable("note");
+            noteTitle.setText(this.note.getTitle());
+            noteContent.setText(this.note.getContent());
+        }
         Button cancelButton = (Button) rootView.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new OnClickListener() {
 
@@ -98,7 +101,6 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
             }
 
         });
-        this.mLocationClient = new LocationClient(getActivity(), this, this);
 
         return rootView;
     }
@@ -117,10 +119,9 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
             task.execute(current);
         }
         if (this.note.getLat() == 0 && this.note.getLng() == 0) {
+            Log.d(MainActivity.TAG, "Location needed, trying to connect...");
             MainActivity a = (MainActivity) getActivity();
-            if (a.servicesConnected()) {
-                this.mLocationClient.connect();
-            }
+            a.servicesConnected();
         }
     }
 
@@ -130,7 +131,8 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
             Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + this.note.getId());
             getActivity().getContentResolver().delete(uri, null, null);
         }
-        this.mLocationClient.disconnect();
+        MainActivity activity = (MainActivity) getActivity();
+        activity.getApiClient().disconnect();
         super.onPause();
     }
 
@@ -141,22 +143,18 @@ public class NoteFragmentEdit extends Fragment implements CurrentEventLocationRe
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult arg0) {
-        Log.e(MainActivity.TAG, "Unable to connect to location services: " + arg0.getErrorCode());
-    }
-
-    @Override
     public void onConnected(Bundle arg0) {
         Log.i(MainActivity.TAG, "Location connected");
-        Location l = this.mLocationClient.getLastLocation();
+        MainActivity activity = (MainActivity) getActivity();
+        Location l = LocationServices.FusedLocationApi.getLastLocation(activity.getApiClient());
         Log.d(MainActivity.TAG, l.toString());
         this.note.setLat(l.getLatitude());
         this.note.setLng(l.getLongitude());
-        this.mLocationClient.disconnect();
+        activity.getApiClient().disconnect();
     }
 
     @Override
-    public void onDisconnected() {
-        Log.i(MainActivity.TAG, "Location disconnected");
+    public void onConnectionSuspended(int cause) {
+        Log.i(MainActivity.TAG, "Location connection suspended: " + cause);
     }
 }

@@ -16,6 +16,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,14 +24,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
-public class MainActivity extends Activity implements MainFragment.OnNoteSelectedListener, NoteFragmentView.OnNoteEditListener, NoteFragmentEdit.OnNoteEditDoneListener {
+public class MainActivity extends Activity implements MainFragment.OnNoteSelectedListener, NoteFragmentView.OnNoteEditListener, NoteFragmentEdit.OnNoteEditDoneListener, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String TAG = "dima2014";
 
     private static final int SHARED_TITLE_LIMIT = 15;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    private GoogleApiClient apiClient = null;
 
     public static class ErrorDialogFragment extends DialogFragment {
         private Dialog mDialog;
@@ -140,7 +144,10 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
 
     @Override
     public void onNoteEdit(Note note) {
-        NoteFragmentEdit noteEditFragment = new NoteFragmentEdit(note);
+        NoteFragmentEdit noteEditFragment = new NoteFragmentEdit();
+        Bundle args = new Bundle();
+        args.putSerializable("note", note);
+        noteEditFragment.setArguments(args);
         FragmentManager manager = getFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
         trans.replace(R.id.notefragmentview, noteEditFragment, NoteFragmentEdit.TAG);
@@ -179,20 +186,32 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         onNoteSelected(note);
     }
 
-    public boolean servicesConnected() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (ConnectionResult.SUCCESS == resultCode) {
-            Log.d("Location Updates", "Google Play services is available.");
-            return true;
+    public void servicesConnected() {
+        NoteFragmentEdit noteEdit = (NoteFragmentEdit) getFragmentManager().findFragmentByTag(NoteFragmentEdit.TAG);
+        apiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(noteEdit)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        apiClient.connect();
+    }
+
+    public GoogleApiClient getApiClient() {
+        return apiClient;
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        if (result.hasResolution()) {
+            try {
+                result.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                apiClient.connect();
+            }
         }
         else {
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            if (errorDialog != null) {
-                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
-                errorFragment.setDialog(errorDialog);
-                errorFragment.show(getFragmentManager(), "Location Updates");
-            }
-            return false;
+            Log.w(MainActivity.TAG, "No resolution for Play Services connection problem " + result.getErrorCode());
         }
     }
 }
