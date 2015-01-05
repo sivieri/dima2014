@@ -9,13 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="it.polimi.dima2014.MainActivity$PlaceholderFragment" >
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/notesList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="6"
-        android:scrollbars="vertical">
-    </ListView>
+        android:scrollbars="vertical" />
 
     <Button
         android:id="@+id/newNote"

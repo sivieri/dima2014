@@ -3,6 +3,9 @@ package it.polimi.dima2014;
 import it.polimi.dima2014.data.Note;
 import it.polimi.dima2014.data.NotesContentProvider;
 import it.polimi.dima2014.data.NotesOpenHelper;
+import it.polimi.dima2014.views.DividerItemDecoration;
+import it.polimi.dima2014.views.NoteAdapter;
+import it.polimi.dima2014.views.NoteHolder;
 
 import java.util.logging.Logger;
 
@@ -17,6 +20,9 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -32,11 +38,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class MainFragment extends Fragment implements OnItemClickListener, LoaderCallbacks<Cursor> {
+public class MainFragment extends Fragment implements NoteHolder.OnNoteListSelectedListener, LoaderCallbacks<Cursor> {
     public static final String TAG = "MainFragment";
 
     private OnNoteSelectedListener noteListener;
-    private SimpleCursorAdapter mAdapter;
+    private NoteAdapter mAdapter;
     private DateTimeFormatter formatter;
 
     public interface OnNoteSelectedListener {
@@ -63,12 +69,13 @@ public class MainFragment extends Fragment implements OnItemClickListener, Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        String[] fromColumns = { NotesOpenHelper.KEY };
-        int[] toViews = { android.R.id.text1 };
-        this.mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-        ListView listView = (ListView) rootView.findViewById(R.id.notesList);
-        listView.setAdapter(this.mAdapter);
-        listView.setOnItemClickListener(this);
+        mAdapter = new NoteAdapter(getActivity().getContentResolver(), this, null);
+        RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.notesList);
+        listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        listView.setLayoutManager(layoutManager);
+        listView.setItemAnimator(new DefaultItemAnimator());
+        listView.setAdapter(mAdapter);
         registerForContextMenu(listView);
         getActivity().getLoaderManager().initLoader(0, null, this);
         Button newButton = (Button) rootView.findViewById(R.id.newNote);
@@ -84,22 +91,8 @@ public class MainFragment extends Fragment implements OnItemClickListener, Loade
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Logger.getLogger(MainActivity.TAG).info("Clicked on " + id);
-        Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + id);
-        String[] projection = { NotesOpenHelper.ID, NotesOpenHelper.KEY, NotesOpenHelper.VALUE, NotesOpenHelper.TIMESTAMP, NotesOpenHelper.LAT, NotesOpenHelper.LNG };
-        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            Long noteId = cursor.getLong(cursor.getColumnIndexOrThrow(NotesOpenHelper.ID));
-            String title = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.KEY));
-            String content = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.VALUE));
-            String ts = cursor.getString(cursor.getColumnIndexOrThrow(NotesOpenHelper.TIMESTAMP));
-            Double lat = cursor.getDouble(cursor.getColumnIndexOrThrow(NotesOpenHelper.LAT));
-            Double lng = cursor.getDouble(cursor.getColumnIndexOrThrow(NotesOpenHelper.LNG));
-            cursor.close();
-            this.noteListener.onNoteSelected(new Note(noteId, this.formatter.parseDateTime(ts), title, content, lat, lng));
-        }
+    public void onNoteListSelected(Note note) {
+        this.noteListener.onNoteSelected(note);
     }
 
     @Override
