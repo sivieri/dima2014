@@ -130,7 +130,10 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         FragmentManager manager = getFragmentManager();
         String screenType = getString(R.string.screen_type);
         if (screenType.equals("phone")) {
-            Fragment noteFragment = new NoteFragmentView(note);
+            Fragment noteFragment = new NoteFragmentView();
+            Bundle args = new Bundle();
+            args.putSerializable("note", note);
+            noteFragment.setArguments(args);
             FragmentTransaction trans = manager.beginTransaction();
             trans.replace(R.id.notefragmentview, noteFragment, NoteFragmentView.TAG);
             trans.addToBackStack(null);
@@ -153,6 +156,17 @@ public class MainActivity extends Activity implements MainFragment.OnNoteSelecte
         trans.replace(R.id.notefragmentview, noteEditFragment, NoteFragmentEdit.TAG);
         trans.addToBackStack(null);
         trans.commit();
+    }
+
+    @Override
+    public void onNoteDeleted(Note note) {
+        String screenType = getString(R.string.screen_type);
+        if (screenType.equals("phone")) {
+            FragmentManager manager = getFragmentManager();
+            manager.popBackStack();
+        }
+        Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + note.getId());
+        getContentResolver().delete(uri, null, null);
     }
 
     @Override

@@ -34,14 +34,10 @@ public class NoteFragmentView extends Fragment {
 
     public interface OnNoteEditListener {
         public void onNoteEdit(Note note);
+        public void onNoteDeleted(Note note);
     }
 
     public NoteFragmentView() {
-        this.formatter = new DateTimeFormatterBuilder().appendDayOfMonth(2).appendLiteral("/").appendMonthOfYear(2).appendLiteral("/").appendYear(4, 4).appendLiteral(" ").appendHourOfDay(2).appendLiteral(":").appendMinuteOfHour(2).toFormatter();
-    }
-
-    public NoteFragmentView(Note note) {
-        this.note = note;
         this.formatter = new DateTimeFormatterBuilder().appendDayOfMonth(2).appendLiteral("/").appendMonthOfYear(2).appendLiteral("/").appendYear(4, 4).appendLiteral(" ").appendHourOfDay(2).appendLiteral(":").appendMinuteOfHour(2).toFormatter();
     }
 
@@ -74,12 +70,25 @@ public class NoteFragmentView extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_note_view, container, false);
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("note")) {
+            note = (Note) bundle.getSerializable("note");
+        }
         Button editButton = (Button) rootView.findViewById(R.id.editButton);
         editButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                NoteFragmentView.this.editListener.onNoteEdit(NoteFragmentView.this.note);
+            NoteFragmentView.this.editListener.onNoteEdit(NoteFragmentView.this.note);
+            }
+
+        });
+        Button deleteButton = (Button) rootView.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                NoteFragmentView.this.editListener.onNoteDeleted(NoteFragmentView.this.note);
             }
 
         });

@@ -30,11 +30,26 @@
         android:layout_weight="1"
         android:text="" />
 
-    <Button
-        android:id="@+id/editButton"
-        style="?android:attr/buttonBarButtonStyle"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/edit_button" />
+        android:layout_height="fill_parent">
+
+        <Button
+            android:id="@+id/editButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_button" />
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/note_context_deleted"
+            android:id="@+id/deleteButton" />
+    </LinearLayout>
 
 </LinearLayout>

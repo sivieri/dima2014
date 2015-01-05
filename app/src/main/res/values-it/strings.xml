@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">DimaTodos</string>
     <string name="hello_world">Ciao mondo!</string>
     <string name="action_settings">Impostazioni</string>
     <string name="title_hint">Titolo</string>
@@ -9,5 +8,12 @@
     <string name="save_button">Salva</string>
     <string name="cancel_button">Annulla</string>
     <string name="edit_button">Modifica</string>
+    <string name="go_to_map">Mostra sulla mappa&#8230;</string>
+    <string name="new_button">Nuova nota</string>
+    <string name="note_context_deleted">Elimina</string>
+    <string name="note_share_text">Condividi</string>
+    <string name="screen_type"></string>
+    <string name="sidebar_search">Cerca&#8230;</string>
+    <string name="wiki_search">Cerca su Wiktionary</string>
 
 </resources>

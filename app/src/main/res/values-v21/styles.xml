@@ -6,6 +6,6 @@
     <style name="AppBaseTheme" parent="android:Theme.Material.Light.DarkActionBar">
         <item name="android:colorPrimary">@color/blue_std</item>
         <item name="android:colorPrimaryDark">@color/blue_dark</item>
-        <item name="android:colorAccent">@color/blue_accent</item>
+        <item name="android:colorAccent">@color/blue_std</item>
     </style>
 </resources>

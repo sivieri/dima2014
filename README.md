@@ -40,6 +40,9 @@ This version requires the Google Play Services library: it has to be set up acco
 
 # Lesson 6
 * Ported the project to AndroidStudio (now the official IDE)
-* Ported the project to API 21: basically no changes, except for the Location API client, due to changes to the Google Play Services library v.6.5
+* Ported the project to API 21
+* Created a new style for API 21+, using Material Design
+* Ported all ListViews to RecyclerViews
+* Ported the Location Client API to Google Play Services 6.5+
 
-This version requires AndroidStudio. It does not require the Google Play Services library to be added by hand, the Gradle building system takes care of it (as well as the JodaTime library and the support library v.4).
+This version requires AndroidStudio. It does not require the Google Play Services library to be added by hand, the Gradle building system takes care of it (as well as the JodaTime library and the support library v.4 and v.7).

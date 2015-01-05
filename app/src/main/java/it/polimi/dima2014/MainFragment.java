@@ -76,7 +76,6 @@ public class MainFragment extends Fragment implements NoteHolder.OnNoteListSelec
         listView.setLayoutManager(layoutManager);
         listView.setItemAnimator(new DefaultItemAnimator());
         listView.setAdapter(mAdapter);
-        registerForContextMenu(listView);
         getActivity().getLoaderManager().initLoader(0, null, this);
         Button newButton = (Button) rootView.findViewById(R.id.newNote);
         newButton.setOnClickListener(new OnClickListener() {
@@ -111,25 +110,4 @@ public class MainFragment extends Fragment implements NoteHolder.OnNoteListSelec
         this.mAdapter.swapCursor(null);
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        if (v.getId() == R.id.notesList) {
-            super.onCreateContextMenu(menu, v, menuInfo);
-            MenuInflater menuInflater = getActivity().getMenuInflater();
-            menuInflater.inflate(R.menu.context, menu);
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.context_delete:
-                Uri uri = Uri.parse(NotesContentProvider.CONTENT_URI + "/" + info.id);
-                getActivity().getContentResolver().delete(uri, null, null);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
 }
