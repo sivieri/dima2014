@@ -27,6 +27,9 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -37,8 +40,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
+
+import it.polimi.dima2014.views.DividerItemDecoration;
+import it.polimi.dima2014.views.WikiAdapter;
 
 public class WikiFragment extends Fragment {
     private static final String WIKITIONARY_ENDPOINT = ".wiktionary.org/w/api.php";
@@ -56,7 +61,14 @@ public class WikiFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.wiki_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.wiki_fragment, container, false);
+        RecyclerView definitionsList = (RecyclerView) rootView.findViewById(R.id.definitionsList);
+        definitionsList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        definitionsList.setLayoutManager(layoutManager);
+        definitionsList.setItemAnimator(new DefaultItemAnimator());
+
+        return rootView;
     }
 
     @Override
@@ -103,7 +115,7 @@ public class WikiFragment extends Fragment {
             }
 
         }).start();
-        final ListView definitionsList = (ListView) getActivity().findViewById(R.id.definitionsList);
+        final RecyclerView definitionsList = (RecyclerView) getActivity().findViewById(R.id.definitionsList);
         final EditText searchEdit = (EditText) getActivity().findViewById(R.id.wordEdit);
         final Runnable filler = new Runnable() {
 
@@ -123,17 +135,16 @@ public class WikiFragment extends Fragment {
                     JSONObject main = new JSONObject(result);
                     JSONObject query = main.getJSONObject("query");
                     JSONArray pages = query.getJSONArray("search");
-                    List<CharSequence> pagesHtml = new ArrayList<CharSequence>();
+                    final List<CharSequence> pagesHtml = new ArrayList<CharSequence>();
                     for (int i = 0; i < pages.length(); ++i) {
                         JSONObject page = pages.getJSONObject(i);
                         pagesHtml.add(Html.fromHtml(page.getString("snippet")));
                     }
-                    final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_list_item_1, pagesHtml);
                     definitionsList.post(new Runnable() {
 
                         @Override
                         public void run() {
-                            definitionsList.setAdapter(adapter);
+                            definitionsList.setAdapter(new WikiAdapter(pagesHtml));
                         }
 
                     });

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue_std">#2196F3</color>
+    <color name="blue_dark">#1976D2</color>
+    <color name="blue_accent">#90CAF9</color>
+    <style name="AppBaseTheme" parent="android:Theme.Material.Light.DarkActionBar">
+        <item name="android:colorPrimary">@color/blue_std</item>
+        <item name="android:colorPrimaryDark">@color/blue_dark</item>
+        <item name="android:colorAccent">@color/blue_accent</item>
+    </style>
+</resources>
