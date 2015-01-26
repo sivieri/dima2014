@@ -37,3 +37,6 @@ Known bug: the list of all titles of the notes is not able to handle changes to 
 * Minor changes
 
 This version requires the Google Play Services library: it has to be set up according to the local Android SDK location, [here](http://developer.android.com/google/play-services/setup.html) you can find the instructions.
+
+# Lesson 6
+* Ported everything to Lollipop and Android Studio; check the [studio branch](https://github.com/sivieri/dima2014/tree/studio) for that specific version
